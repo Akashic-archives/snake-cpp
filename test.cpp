@@ -1,22 +1,34 @@
 #include <ncurses.h>
-using namespace std;
 
-int main(int argc, char ** argv)
-{
-    // init screen and sets up screen
-    initscr();
+int main() {
+    initscr();             // Initialize ncurses
+    keypad(stdscr, TRUE);  // Enable keypad mode for special keys
+    noecho();              // Don't echo input characters
 
-    // print to screen
-    printw("Hello World");
+    int ch;
+    printw("Press arrow keys or 'q' to quit.\n");
 
-    // refreshes the screen
-    refresh();
+    while ((ch = getch()) != 'q') {
+        switch (ch) {
+            case KEY_UP:
+                printw("Up arrow pressed!\n");
+                break;
+            case KEY_DOWN:
+                printw("Down arrow pressed!\n");
+                break;
+            case KEY_LEFT:
+                printw("Left arrow pressed!\n");
+                break;
+            case KEY_RIGHT:
+                printw("Right arrow pressed!\n");
+                break;
+            default:
+                printw("Key pressed: %d\n", ch);
+                break;
+        }
+        refresh(); // Update the screen
+    }
 
-    // pause the screen output
-    getch();
-
-    // deallocates memory and ends ncurses
-    endwin();
+    endwin(); // Clean up ncurses
     return 0;
 }
-

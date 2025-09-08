@@ -1,0 +1,22 @@
+
+https://stackoverflow.com/questions/5508922/whats-the-usual-way-of-controlling-frame-rate
+"while ( gameloop )
+{
+    float framedelta = ( timeNow - timeLast )
+    timeLast = timeNow;
+
+    for each ( GameObject object in World )
+    {
+        object->Animate(framedelta);
+        object->Move(speed * framedelta)
+    }
+
+    render();
+}"
+
+https://www.geeksforgeeks.org/blogs/cpp-for-game-development/
+"1) game loop
+ 2) rendering
+ 3) physics
+ 4) input handling"
+
