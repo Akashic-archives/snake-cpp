@@ -11,6 +11,9 @@
  *
  */
 
+// TODO: apple appears in the body, and snake collision doesnt work.
+// also, make it bigger and more abstract, like i can choose a grid size and all
+
 #include <iostream>
 #include <deque>
 #include <cstdlib>
@@ -25,9 +28,11 @@ class Coordonnees;
 
 void printWall();
 void printSnake(deque<Coordonnees> snake, int snakeSize);
+void printApple(Coordonnees apple);
 int getDirection(int currentDirection);
 bool nextPlaceIsApple(deque<Coordonnees> snake, int direction, Coordonnees apple);
 bool nextPlaceIsWall(deque<Coordonnees> snake, int direction, Coordonnees apple);
+bool nextPlaceIsSnake(deque<Coordonnees> snake, int direction);
 Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction);
 
 class Coordonnees {
@@ -48,6 +53,7 @@ public:
 int main(int argc, char ** argv) {
 
   initscr();
+  noecho();
 
   srand(time(0));
 
@@ -56,6 +62,7 @@ int main(int argc, char ** argv) {
   int snakeSize = 1;
 
   Coordonnees apple = Coordonnees(rand() % 5, rand() % 5);
+  bool appleEaten = false;
 
 //TODO: make a string with everything that will be printed (clear and refresh) with a function to print the screen with the snake and all (mvprint(10, 20, "#")) (and a wall)
 
@@ -78,7 +85,6 @@ int main(int argc, char ** argv) {
   printSnake(snake, snakeSize);
   refresh();
   keypad(stdscr, TRUE);
-  noecho();
   int direction = getDirection(1);
 
 
@@ -99,7 +105,10 @@ int main(int argc, char ** argv) {
     if (nextPlaceIsApple(snake, direction, apple)) {
       snake.push_front(apple);
       snakeSize += 1;
+      appleEaten = true;
     } else if (nextPlaceIsWall(snake, direction, apple)) {
+      break;
+    } else if (nextPlaceIsSnake(snake, direction)) {
       break;
     } else {
       // move snake depending on the direction
@@ -111,12 +120,17 @@ int main(int argc, char ** argv) {
     // apple logic
     // if exist, dont do anything
     // if doesnt exist, add one randomly, not on snake, not in wall
+    if (appleEaten) {
+      apple = Coordonnees(rand() % 5, rand() % 5);
+      appleEaten = false;
+    }
 
     // print logic
     // clear screen, print wall, print snake, print apple
     clear();
     printWall();
     printSnake(snake, snakeSize);
+    printApple(apple);
     
     refresh();
 
@@ -125,6 +139,7 @@ int main(int argc, char ** argv) {
   clear();
   printw("Game Over!");
   refresh();
+  nodelay(stdscr, false);
   getch();
   endwin();
 
@@ -146,16 +161,20 @@ void printSnake(deque<Coordonnees> snake, int snakeSize) {
   }
 }
 
+void printApple(Coordonnees apple) {
+  mvprintw(apple.x + 1, (apple.y + 1) * 2, "$");
+}
+
 int getDirection(int currentDirection) {
   int fleche = getch();
   int ch = currentDirection;
-  if (ch == KEY_UP) {
+  if (fleche == KEY_UP) {
     ch = 0;
-  } else if (ch == KEY_RIGHT) {
+  } else if (fleche == KEY_RIGHT) {
     ch = 1;
-  } else if (ch == KEY_DOWN) {
+  } else if (fleche == KEY_DOWN) {
     ch = 2;
-  } else if (ch == KEY_LEFT) {
+  } else if (fleche == KEY_LEFT) {
     ch = 3;
   }
   return ch;
@@ -169,7 +188,24 @@ bool nextPlaceIsApple(deque<Coordonnees> snake, int direction, Coordonnees apple
 }
 
 bool nextPlaceIsWall(deque<Coordonnees> snake, int direction, Coordonnees apple) {
+  int x = snake.front().x;
+  int y = snake.front().y;
+  if (x == -1 || x == 5 || y == -1 || y == 5) {
+    return true;
+  }
   return false;
+}
+
+bool nextPlaceIsSnake(deque<Coordonnees> snake, int direction){
+  int x = snake.front().x;
+  int y = snake.front().y;
+  bool retValue = false;
+  for (int i = 0; i < snake.size(); i++) {
+    if (snake[i].x == x && snake[i].y == y && !snake.front().equals(snake[i])) {
+      retValue = true;
+    }
+  }
+  return retValue;
 }
 
 Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction) {
