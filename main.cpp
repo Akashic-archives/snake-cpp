@@ -26,8 +26,9 @@ class Coordonnees;
 void printWall();
 void printSnake(deque<Coordonnees> snake, int snakeSize);
 int getDirection(int currentDirection);
-bool nextPlaceIsApple(snake, direction, Coordonnees apple);
-bool nextPlaceIsWall(snake, direction, Coordonnees apple);
+bool nextPlaceIsApple(deque<Coordonnees> snake, int direction, Coordonnees apple);
+bool nextPlaceIsWall(deque<Coordonnees> snake, int direction, Coordonnees apple);
+Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction);
 
 class Coordonnees {
 public:
@@ -36,6 +37,9 @@ public:
   Coordonnees(int newX, int newY) {
     x = newX;
     y = newY;
+  }
+  bool equals(Coordonnees next) {
+    return x==next.x && y==next.y;
   }
 };
 
@@ -51,7 +55,7 @@ int main(int argc, char ** argv) {
   snake.push_back(Coordonnees(rand() % 5, rand() % 5));
   int snakeSize = 1;
 
-  Coordonnees apple = new Coordonnees(rand() % 5, rand() % 5);
+  Coordonnees apple = Coordonnees(rand() % 5, rand() % 5);
 
 //TODO: make a string with everything that will be printed (clear and refresh) with a function to print the screen with the snake and all (mvprint(10, 20, "#")) (and a wall)
 
@@ -75,7 +79,7 @@ int main(int argc, char ** argv) {
   refresh();
   keypad(stdscr, TRUE);
   noecho();
-  int direction = getDirection(int 1);
+  int direction = getDirection(1);
 
 
 
@@ -91,14 +95,16 @@ int main(int argc, char ** argv) {
 
     // snake movement logic
     // change direction, if wall, lose, if snake, lose, if apple, remove, if none, advance snakes
-    direction = getDirection();
+    direction = getDirection(direction);
     if (nextPlaceIsApple(snake, direction, apple)) {
       snake.push_front(apple);
       snakeSize += 1;
-    } else if (nextPlaceIsWall, direction, apple) {
+    } else if (nextPlaceIsWall(snake, direction, apple)) {
       break;
     } else {
       // move snake depending on the direction
+      snake.push_front(getNextCoordonnes(snake, direction));
+      snake.pop_back();
     }
 
 
@@ -136,7 +142,7 @@ void printWall() {
 
 void printSnake(deque<Coordonnees> snake, int snakeSize) {
   for (int i = 0; i < snakeSize; i++) {
-    mvprintw(snake[i].x + 1, snake[i].y * 2, "#");
+    mvprintw(snake[i].x + 1, (snake[i].y + 1) * 2, "#");
   }
 }
 
@@ -156,12 +162,30 @@ int getDirection(int currentDirection) {
 }
 
 bool nextPlaceIsApple(deque<Coordonnees> snake, int direction, Coordonnees apple) {
-  
+  if (getNextCoordonnes(snake, direction).equals(apple)) {
+    return true;
+  }
+  return false;
 }
 
 bool nextPlaceIsWall(deque<Coordonnees> snake, int direction, Coordonnees apple) {
-
+  return false;
 }
 
+Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction) {
+Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction);
+  Coordonnees next = Coordonnees(0,0);
+  Coordonnees head = snake.front();
+  if (direction == 0) {
+    next = Coordonnees(head.x-1, head.y);
+  } else if (direction == 1) {
+    next = Coordonnees(head.x, head.y+1);
+  } else if (direction == 2) {
+    next = Coordonnees(head.x+1, head.y);
+  } else if (direction == 3) {
+    next = Coordonnees(head.x, head.y-1);
+  }
+  return next;
+}
 
 
