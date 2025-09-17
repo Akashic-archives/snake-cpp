@@ -11,8 +11,7 @@
  *
  */
 
-// TODO: apple appears in the body, and snake collision doesnt work.
-// also, make it bigger and more abstract, like i can choose a grid size and all
+// TODO: also, make it bigger and more abstract, like i can choose a grid size and all
 
 #include <iostream>
 #include <deque>
@@ -34,6 +33,7 @@ bool nextPlaceIsApple(deque<Coordonnees> snake, int direction, Coordonnees apple
 bool nextPlaceIsWall(deque<Coordonnees> snake, int direction, Coordonnees apple);
 bool nextPlaceIsSnake(deque<Coordonnees> snake, int direction);
 Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction);
+bool appleIsInBody(deque<Coordonnees> snake, Coordonnees apple);
 
 class Coordonnees {
 public:
@@ -87,11 +87,6 @@ int main(int argc, char ** argv) {
   keypad(stdscr, TRUE);
   int direction = getDirection(1);
 
-
-
-
-
-
   nodelay(stdscr, true);
 
   // TODO: make a menu with options
@@ -122,6 +117,9 @@ int main(int argc, char ** argv) {
     // if doesnt exist, add one randomly, not on snake, not in wall
     if (appleEaten) {
       apple = Coordonnees(rand() % 5, rand() % 5);
+      while (appleIsInBody(snake, apple)) {
+        apple = Coordonnees(rand() % 5, rand() % 5);
+      }
       appleEaten = false;
     }
 
@@ -197,19 +195,16 @@ bool nextPlaceIsWall(deque<Coordonnees> snake, int direction, Coordonnees apple)
 }
 
 bool nextPlaceIsSnake(deque<Coordonnees> snake, int direction){
-  int x = snake.front().x;
-  int y = snake.front().y;
-  bool retValue = false;
-  for (int i = 0; i < snake.size(); i++) {
-    if (snake[i].x == x && snake[i].y == y && !snake.front().equals(snake[i])) {
-      retValue = true;
+  Coordonnees head = Coordonnees(snake.front().x, snake.front().y);
+  for (int i = 1; i < snake.size(); i++) {
+    if (head.equals(snake[i])) {
+      return true;
     }
   }
-  return retValue;
+  return false;
 }
 
 Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction) {
-Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction);
   Coordonnees next = Coordonnees(0,0);
   Coordonnees head = snake.front();
   if (direction == 0) {
@@ -224,4 +219,12 @@ Coordonnees getNextCoordonnes(deque<Coordonnees> snake, int direction);
   return next;
 }
 
+bool appleIsInBody(deque<Coordonnees> snake, Coordonnees apple) {
+  for (int i = 0; i < snake.size(); i++) {
+    if (snake[i].equals(apple)) {
+      return true;
+    }
+  }
+  return false;
+}
 
