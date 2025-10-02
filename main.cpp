@@ -54,6 +54,7 @@ int main(int argc, char ** argv) {
 
   initscr();
   noecho();
+  curs_set(0);
 
   srand(time(0));
 
@@ -80,7 +81,6 @@ int main(int argc, char ** argv) {
 
   clear();
 
-  // TODO: starting direction
   printWall();
   printSnake(snake, snakeSize);
   refresh();

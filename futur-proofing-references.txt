@@ -20,3 +20,5 @@ https://www.geeksforgeeks.org/blogs/cpp-for-game-development/
  3) physics
  4) input handling"
 
+https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html
+
